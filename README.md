@@ -35,6 +35,19 @@ Copy the tool to the device, e.g. via SSH. On the device you need to have access
 
 Showing you my update script should give you a general idea, although you will most likely need to make changes if you want to use it:
 
+
+```
+#!/bin/bash
+
+source ~/.fpga_config_de10
+IP=$SOC_IP_DE10
+CFGTOOL="target/arm-unknown-linux-gnueabi/release/fpga_config_tool"
+CFGTOOL_HPS="~/fpga_config_tool"
+
+scp $CFGTOOL root@$IP:$CFGTOOL_HPS
+```
+
+
 ```
 #!/bin/bash
 
