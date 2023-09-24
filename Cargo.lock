@@ -3,6 +3,13 @@
 version = 3
 
 [[package]]
+name = "fpga_config_tool"
+version = "0.1.0"
+dependencies = [
+ "memmap",
+]
+
+[[package]]
 name = "libc"
 version = "0.2.148"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -16,13 +23,6 @@ checksum = "6585fd95e7bb50d6cc31e20d4cf9afb4e2ba16c5846fc76793f11218da9c475b"
 dependencies = [
  "libc",
  "winapi",
-]
-
-[[package]]
-name = "rusty_config_tool"
-version = "0.1.0"
-dependencies = [
- "memmap",
 ]
 
 [[package]]

@@ -1,5 +1,5 @@
 [package]
-name = "rusty_config_tool"
+name = "fpga_config_tool"
 version = "0.1.0"
 edition = "2021"
 
