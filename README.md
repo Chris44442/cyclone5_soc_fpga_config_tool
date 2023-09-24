@@ -1,20 +1,25 @@
 # Cyclone V SoC FPGA Config Tool
 
-On the Cyclone V SoC the HPS can access the FPGA manager to configure the FPGA. This tool automates the entire process and should run on any Distro. Do not try to use it on Arria, Stratix, Agilex or other devices, it will not work (although with a few tweaks it might). To work on your device, you will need to make sure `cdratio` and `RBF_FILE` are set correctly.
+On the Cyclone V SoC the HPS can access the FPGA manager to configure the FPGA. This tool automates the entire process and should run on any Linux Distro. Do not try to use it on Arria, Stratix, Agilex or other devices, it will not work (although with a few tweaks it might). To work on your device, you will need to make sure `cdratio` and `RBF_FILE` are set correctly. The current cdratio is set for the Terasic DE10-Nano.
 
 Shoutout to [Nicolás Hasbún](https://github.com/nhasbun/de10nano_fpga_linux_config) who insprired me to make this tool in Rust.
 
 ## Documentation
 
-To understand what this tool does, refer to the `Cyclone V Hard Processor System Technical Reference Manual` and also the `Cyclone V HPS Register Address Map and Definitions` which can both be found online.
+To better understand what this tool does, refer to the `Cyclone V Hard Processor System Technical Reference Manual` and also the `Cyclone V HPS Register Address Map and Definitions` which can both be found online.
 
 ## Dependencies
 
-To build the tool you will need:
-- Rust and Cargo
-- Cross Compiler (tested with `arm-unknown-linux-gnueabi` on Buildroot and `arm-unknown-linux-gnueabihf` on Angstrom)
+To build the tool you need:
+- Rust and Cargo installed
+- With rustup add a Cross Compiler (tested with `arm-unknown-linux-gnueabi` for Buildroot and `arm-unknown-linux-gnueabihf` for Angstrom)
+- For cross compilation don't forget so state the Linker in the `cargo.toml`, e.g.:
+```
+[target.arm-unknown-linux-gnueabi]
+linker = "arm-linux-gnueabi-gcc"
+```
 
-## Build the FPGA Config Tool
+## Build the tool
 
 Build the tool with:
 
@@ -22,13 +27,13 @@ Build the tool with:
 cargo build --target=arm-unknown-linux-gnueabi --release
 ```
 
-Obviously you can also natively compile on your device if you have Rust and Cargo installed on it.
+Of course you can also natively compile on your SoC device if you have Rust and Cargo installed on it.
 
 ## How to use the tool
 
 Copy the tool to the device, e.g. via SSH. On the device you need to have access to the rbf file, e.g. by mounting your SD card. Run the tool.
 
-This is my update script, although you will need to make changes for your flow, but it should give you a general idea.
+Showing you my update script should give you a general idea, although you will most likely need to make changes if you want to use it:
 
 ```
 #!/bin/bash
