@@ -1,8 +1,8 @@
-# Cyclone V SoC FPGA Config Tool
+# Cyclone V SoC FPGA Config Linux Tool
 
-On the Cyclone V SoC the HPS can access the FPGA manager to configure the FPGA. This tool automates the entire process and should run on any Linux Distro. Do not try to use it on Arria, Stratix, Agilex or other devices, it will not work (although with a few tweaks it might). To work on your device, you will need to make sure `cdratio` and `RBF_FILE` are set correctly. The current cdratio is set for the Terasic DE10-Nano.
+On Cyclone V SoC devices the HPS can access the FPGA manager to configure the FPGA. This tool automates the entire process and should run on any Linux Distro. Do not try to use it on Arria, Stratix, Agilex or other devices, it will not work (although with a few tweaks it might). To work on your device, you will need to make sure `cdratio` and `RBF_FILE` are set correctly. The current cdratio is set for the Terasic DE10-Nano.
 
-Shoutout to [Nicolás Hasbún](https://github.com/nhasbun/de10nano_fpga_linux_config) who insprired me to make this tool in Rust.
+Shoutout to [Nicolás Hasbún](https://github.com/nhasbun/de10nano_fpga_linux_config) whos work inspired me to make this tool in Rust.
 
 ## Documentation
 
