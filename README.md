@@ -31,9 +31,9 @@ Of course you can also natively compile on your SoC device if you have Rust and 
 
 ## How to use the tool
 
-Copy the tool to the device, e.g. via SSH. On the device you need to have access to the rbf file, e.g. by mounting your SD card. Run the tool.
+Copy the tool from your host PC to the device, e.g. via SSH. On the device you need to have access to the rbf file, e.g. by mounting your SD card. Run the tool.
 
-Showing you my update script should give you a general idea, although you will most likely need to make changes if you want to use it:
+Showing you my copy and update script should give you a general idea, although you will most likely need to make changes if you want to use it. Copy the tool once:
 
 
 ```
@@ -47,6 +47,7 @@ CFGTOOL_HPS="~/fpga_config_tool"
 scp $CFGTOOL root@$IP:$CFGTOOL_HPS
 ```
 
+Now you can rapidly update your FPGA everytime you have a new rbf:
 
 ```
 #!/bin/bash
