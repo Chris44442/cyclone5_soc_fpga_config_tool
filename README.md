@@ -28,7 +28,7 @@ Of course you can also natively compile on your SoC device if you have Rust and 
 
 Copy the tool from your host PC to the device, e.g. via SSH. On the device make sure to have access to the rbf file, e.g. by mounting your SD card. Run the tool.
 
-These are my copy and update scripts, they should give you a general idea, although you will most likely need to make changes if you want to use it. Copy the tool from your host PC to the HPS:
+These are my copy and update scripts, they should give you a general idea, although you will most likely need to make changes if you want to use them. Copy the tool from your host PC to the HPS:
 
 
 ```
