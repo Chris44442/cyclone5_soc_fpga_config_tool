@@ -1,8 +1,6 @@
 # Cyclone V SoC FPGA Config Linux Tool
 
-On Cyclone V SoC devices the HPS can access the FPGA manager to configure the FPGA. This tool automates the entire process and should run on any Linux distro. Do not try to use it on Arria, Stratix, Agilex or other devices, it will not work (although with a few tweaks it might). To work on your device, you will need to make sure `cdratio` and `RBF_FILE` are set correctly. The current cdratio is set for the Terasic DE10-Nano.
-
-Shoutout to [Nicolás Hasbún](https://github.com/nhasbun/de10nano_fpga_linux_config) whose work inspired me to make this tool in Rust.
+On Cyclone V SoC devices the HPS can access the FPGA manager to configure the FPGA. This tool automates the entire process and should run on any Linux distro. Do not try to use it on devices other than Cyclone V SoC, it will not work (although with a few tweaks it might). Make sure `cdratio` and `RBF_FILE` are set correctly. The current cdratio is set for the Terasic DE10-Nano.
 
 ## Documentation
 
@@ -21,7 +19,7 @@ linker = "arm-linux-gnueabi-gcc"
 
 ## Build the tool
 
-Build the tool with:
+Run:
 
 ```
 cargo build --target=arm-unknown-linux-gnueabi --release
@@ -31,9 +29,9 @@ Of course you can also natively compile on your SoC device if you have Rust and 
 
 ## How to use the tool
 
-Copy the tool from your host PC to the device, e.g. via SSH. On the device you need to have access to the rbf file, e.g. by mounting your SD card. Run the tool.
+Copy the tool from your host PC to the device, e.g. via SSH. On the device make sure to have access to the rbf file, e.g. by mounting your SD card. Run the tool.
 
-Showing you my copy and update script should give you a general idea, although you will most likely need to make changes if you want to use it. Copy the tool once:
+These are my copy and update script, they should give you a general idea, although you will most likely need to make changes if you want to use it. Copy the tool from your host PC to the HPS:
 
 
 ```
@@ -47,7 +45,7 @@ CFGTOOL_HPS="~/fpga_config_tool"
 scp $CFGTOOL root@$IP:$CFGTOOL_HPS
 ```
 
-Now you can update your FPGA everytime you have a new rbf. Blazingly fast.
+Now you can update your FPGA everytime you have a new rbf:
 
 ```
 #!/bin/bash
