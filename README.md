@@ -18,9 +18,6 @@ linker = "arm-linux-gnueabi-gcc"
 ```
 
 ## Build the tool
-
-Run:
-
 ```
 cargo build --target=arm-unknown-linux-gnueabi --release
 ```
@@ -31,7 +28,7 @@ Of course you can also natively compile on your SoC device if you have Rust and 
 
 Copy the tool from your host PC to the device, e.g. via SSH. On the device make sure to have access to the rbf file, e.g. by mounting your SD card. Run the tool.
 
-These are my copy and update script, they should give you a general idea, although you will most likely need to make changes if you want to use it. Copy the tool from your host PC to the HPS:
+These are my copy and update scripts, they should give you a general idea, although you will most likely need to make changes if you want to use it. Copy the tool from your host PC to the HPS:
 
 
 ```
@@ -60,4 +57,4 @@ scp $RBF root@$IP:$RBF_HPS > /dev/null
 ssh root@$IP './fpga_config_tool && umount /dev/mmcblk0p1'
 ```
 
-Note: I have successfully tested the tool on the Terasic DE10-Nano and the Enclustra PE1/SA2, each on Buildroot. Presumably it should run on any Cyclone V SoC device on any Linux distro. When running old Distro releases cross compile compatibilty issues with glibc library may happen, in which case you may want to consider upgrading to new kernel and root file system or compile natively.
+Note: I have successfully tested the tool on the Terasic DE10-Nano and the Enclustra PE1/SA2, each on Buildroot. Presumably it should run on any Cyclone V SoC device on any Linux distro. When running old Distro releases cross compile compatibilty issues with glibc library may happen, in which case you may want to consider upgrading to a new kernel and root file system or compile natively.
