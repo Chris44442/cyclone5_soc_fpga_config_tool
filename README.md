@@ -1,6 +1,6 @@
 # Cyclone V SoC FPGA Config Linux Tool
 
-On Cyclone V SoC devices the HPS can access the FPGA manager to configure the FPGA. This tool automates the entire process and should run on any Linux distro. Do not try to use it on devices other than Cyclone V SoC, it will not work (although with a few tweaks it might). Make sure `cdratio` and `RBF_FILE` are set correctly. The current cdratio is set for the Terasic DE10-Nano.
+On Cyclone V SoC devices the HPS can access the FPGA manager to configure the FPGA. This tool automates the entire process and should run on any Linux distro. Do not try to use it on devices other than Cyclone V SoC, it will not work (although with a few tweaks it might). Make sure `RBF_PATH` and `CDRATIO` are set correctly, e.g. 0x3 on the Terasic DE10-Nano and 0x2 on the Enclustra PE1/SA2.
 
 ## Documentation
 
