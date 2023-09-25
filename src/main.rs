@@ -7,36 +7,35 @@ fn main() -> std::io::Result<()> {
     const FPGA_MANAGER_REGS_ADR: u32 = 0xFF706000;
     const FPGA_MANAGER_DATA_ADR: u32 = 0xFFB90000;
     const CTRL_OFFSET          : u32 = 0x4;
-    const MMAPPING_LEN         : usize = 8;
-    let ctrl_offset_index      : usize = (CTRL_OFFSET/4) as usize;
+    let ctrl_idx               : usize = (CTRL_OFFSET/4) as usize;
 
-    let f = std::fs::OpenOptions::new().read(true).write(true).open("/dev/mem")?;
-    let mut mmap = unsafe {memmap::MmapOptions::new().offset(FPGA_MANAGER_REGS_ADR as u64).len(MMAPPING_LEN).map_mut(&f)?};
-    let u32_slice = unsafe {std::slice::from_raw_parts_mut(mmap.as_mut_ptr() as *mut u32, mmap.len() / 4)};
+    let devmem_file = std::fs::OpenOptions::new().read(true).write(true).open("/dev/mem")?;
+    let mut mmap = unsafe {memmap::MmapOptions::new().offset(FPGA_MANAGER_REGS_ADR as u64).len(8).map_mut(&devmem_file)?};
+    let fpga_regs = unsafe {std::slice::from_raw_parts_mut(mmap.as_mut_ptr() as *mut u32, mmap.len() / 4)}; // FPGA manager registers slice
 
-    let mut data_mmap = unsafe { memmap::MmapOptions::new().offset(FPGA_MANAGER_DATA_ADR as u64).len(4).map_mut(&f)?};
-    let data_u32_slice = unsafe {std::slice::from_raw_parts_mut(data_mmap.as_mut_ptr() as *mut u32, data_mmap.len() / 4)};
+    let mut data_mmap = unsafe { memmap::MmapOptions::new().offset(FPGA_MANAGER_DATA_ADR as u64).len(4).map_mut(&devmem_file)?};
+    let fpga_data = data_mmap.as_mut_ptr() as *mut u32; // FPGA manager data
 
     let rbf_file = std::fs::OpenOptions::new().read(true).open(RBF_FILE)?;
     let rbf_mmap = unsafe { memmap::MmapOptions::new().map(&rbf_file)?};
-    let rbf_u32_slice = unsafe {std::slice::from_raw_parts(rbf_mmap.as_ptr() as *mut u32, rbf_mmap.len() / 4)};
+    let rbf_data = unsafe {std::slice::from_raw_parts(rbf_mmap.as_ptr() as *mut u32, rbf_mmap.len() / 4)};
 
-    unsafe {write_volatile(&mut u32_slice[ctrl_offset_index] as *mut u32, read_volatile(&u32_slice[ctrl_offset_index]) | 0x1)}; //set en (HPS takes control)
-    unsafe {write_volatile(&mut u32_slice[ctrl_offset_index] as *mut u32, read_volatile(&u32_slice[ctrl_offset_index]) | 0x4)}; //set nconfigpull (FPGA off)
-    while (unsafe {read_volatile(&u32_slice[0])} & 0x7) != 0x1 {}; //wait for status update
-    unsafe {write_volatile(&mut u32_slice[ctrl_offset_index] as *mut u32, read_volatile(&u32_slice[ctrl_offset_index]) & !0xC0)}; //reset cdratio
-    unsafe {write_volatile(&mut u32_slice[ctrl_offset_index] as *mut u32, read_volatile(&u32_slice[ctrl_offset_index]) | CDRATIO << 6)}; //set cdratio
-    unsafe {write_volatile(&mut u32_slice[ctrl_offset_index] as *mut u32, read_volatile(&u32_slice[ctrl_offset_index]) & !0x4)}; //reset nconfigpull (FPGA on)
-    while (unsafe {read_volatile(&u32_slice[0])} & 0x7) != 0x2 {}; //wait for status update
-    unsafe {write_volatile(&mut u32_slice[ctrl_offset_index] as *mut u32, read_volatile(&u32_slice[ctrl_offset_index]) | 0x100)}; //set axicfgen
+    unsafe {write_volatile(&mut fpga_regs[ctrl_idx] as *mut u32, read_volatile(&fpga_regs[ctrl_idx]) | 0x1)}; //set en (HPS takes control)
+    unsafe {write_volatile(&mut fpga_regs[ctrl_idx] as *mut u32, read_volatile(&fpga_regs[ctrl_idx]) | 0x4)}; //set nconfigpull (FPGA off)
+    while (unsafe {read_volatile(&fpga_regs[0])} & 0x7) != 0x1 {}; //wait for status update
+    unsafe {write_volatile(&mut fpga_regs[ctrl_idx] as *mut u32, read_volatile(&fpga_regs[ctrl_idx]) & !0xC0)}; //reset cdratio
+    unsafe {write_volatile(&mut fpga_regs[ctrl_idx] as *mut u32, read_volatile(&fpga_regs[ctrl_idx]) | CDRATIO << 6)}; //set cdratio
+    unsafe {write_volatile(&mut fpga_regs[ctrl_idx] as *mut u32, read_volatile(&fpga_regs[ctrl_idx]) & !0x4)}; //reset nconfigpull (FPGA on)
+    while (unsafe {read_volatile(&fpga_regs[0])} & 0x7) != 0x2 {}; //wait for status update
+    unsafe {write_volatile(&mut fpga_regs[ctrl_idx] as *mut u32, read_volatile(&fpga_regs[ctrl_idx]) | 0x100)}; //set axicfgen
 
-    for u32word in rbf_u32_slice.iter() {
-        data_u32_slice[0] = unsafe {read_volatile(u32word)};
+    for rbf_u32_word in rbf_data.iter() {
+        unsafe {*fpga_data = *rbf_u32_word}; // write rbf data to FPGA manager data
     }
 
-    while (unsafe {read_volatile(&u32_slice[0])} & 0x7) != 0x4 {}; //wait for status update
-    unsafe {write_volatile(&mut u32_slice[ctrl_offset_index] as *mut u32, read_volatile(&u32_slice[ctrl_offset_index]) & !0x100)};// reset axicfgen
-    unsafe {write_volatile(&mut u32_slice[ctrl_offset_index] as *mut u32, read_volatile(&u32_slice[ctrl_offset_index]) & !0x1)};// reset en (HPS releases control)
+    while (unsafe {read_volatile(&fpga_regs[0])} & 0x7) != 0x4 {}; //wait for status update
+    unsafe {write_volatile(&mut fpga_regs[ctrl_idx] as *mut u32, read_volatile(&fpga_regs[ctrl_idx]) & !0x100)};// reset axicfgen
+    unsafe {write_volatile(&mut fpga_regs[ctrl_idx] as *mut u32, read_volatile(&fpga_regs[ctrl_idx]) & !0x1)};// reset en (HPS releases control)
 
     Ok(())
 }
