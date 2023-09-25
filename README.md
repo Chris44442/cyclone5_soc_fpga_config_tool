@@ -1,8 +1,8 @@
 # Cyclone V SoC FPGA Config Linux Tool
 
-On Cyclone V SoC devices the HPS can access the FPGA manager to configure the FPGA. This tool automates the entire process and should run on any Linux Distro. Do not try to use it on Arria, Stratix, Agilex or other devices, it will not work (although with a few tweaks it might). To work on your device, you will need to make sure `cdratio` and `RBF_FILE` are set correctly. The current cdratio is set for the Terasic DE10-Nano.
+On Cyclone V SoC devices the HPS can access the FPGA manager to configure the FPGA. This tool automates the entire process and should run on any Linux distro. Do not try to use it on Arria, Stratix, Agilex or other devices, it will not work (although with a few tweaks it might). To work on your device, you will need to make sure `cdratio` and `RBF_FILE` are set correctly. The current cdratio is set for the Terasic DE10-Nano.
 
-Shoutout to [Nicolás Hasbún](https://github.com/nhasbun/de10nano_fpga_linux_config) whos work inspired me to make this tool in Rust.
+Shoutout to [Nicolás Hasbún](https://github.com/nhasbun/de10nano_fpga_linux_config) whose work inspired me to make this tool in Rust.
 
 ## Documentation
 
@@ -12,8 +12,8 @@ To better understand what this tool does, refer to the `Cyclone V Hard Processor
 
 To build the tool you need:
 - Rust and Cargo installed
-- With rustup add a Cross Compiler (tested with `arm-unknown-linux-gnueabi` for Buildroot and `arm-unknown-linux-gnueabihf` for Angstrom)
-- For cross compilation don't forget so state the Linker in the `cargo.toml`, e.g.:
+- With Rustup add the cross compiler (usually `arm-unknown-linux-gnueabi`, otherwise try `arm-unknown-linux-gnueabihf`)
+- For cross compilation don't forget to state the linker in the `cargo.toml`, e.g.:
 ```
 [target.arm-unknown-linux-gnueabi]
 linker = "arm-linux-gnueabi-gcc"
@@ -47,7 +47,7 @@ CFGTOOL_HPS="~/fpga_config_tool"
 scp $CFGTOOL root@$IP:$CFGTOOL_HPS
 ```
 
-Now you can rapidly update your FPGA everytime you have a new rbf:
+Now you can update your FPGA everytime you have a new rbf. Blazingly fast.
 
 ```
 #!/bin/bash
@@ -62,4 +62,4 @@ scp $RBF root@$IP:$RBF_HPS > /dev/null
 ssh root@$IP './fpga_config_tool && umount /dev/mmcblk0p1'
 ```
 
-Note: I have successfully tested the tool on the Terasic DE10-Nano and the Enclustra PE1/SA2, on Buildroot and Angstrom. Presumably it should run on any Cyclone V SoC device on any Linux distro.
+Note: I have successfully tested the tool on the Terasic DE10-Nano and the Enclustra PE1/SA2, each on Buildroot. Presumably it should run on any Cyclone V SoC device on any Linux distro. When running old Distro releases cross compile compatibilty issues with glibc library may happen, in which case you may want to consider upgrading to new kernel and root file system or compile natively.
