@@ -11,7 +11,7 @@ To better understand what this tool does, refer to the `Cyclone V Hard Processor
 To build the tool you need:
 - Rust and Cargo installed
 - With Rustup add the cross compiler (usually `arm-unknown-linux-gnueabi`, otherwise try `arm-unknown-linux-gnueabihf`)
-- For cross compilation don't forget to state the linker in the `cargo.toml`, e.g.:
+- For cross compilation don't forget to state the linker in the `~/.cargo/config.toml`, e.g.:
 ```
 [target.arm-unknown-linux-gnueabi]
 linker = "arm-linux-gnueabi-gcc"
