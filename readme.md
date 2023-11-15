@@ -1,25 +1,24 @@
 # Cyclone V SoC FPGA Config Linux Tool
 
-On Cyclone V SoC devices the HPS can access the FPGA manager to configure the 
-FPGA. This tool automates the entire process and should run on any Linux 
-distro. Do not try to use it on devices other than Cyclone V SoC, it will not 
-work (although with a few tweaks it might). In the source file make sure 
-`RBF_PATH` and `CDRATIO` are set correctly, e.g. 0x3 on the Terasic DE10-Nano 
-and 0x2 on the Enclustra PE1/SA2.
+With this tool you can configure the FPGA fabric with your rbf-file by 
+accessing the FPGA manager from the HPS of your Cyclone V SoC device. Do not 
+try to use it on other devices. In the source file make sure `RBF_PATH` and 
+`CDRATIO` are set correctly, e.g. 0x3 on the Terasic DE10-Nano and 0x2 on the 
+Enclustra PE1/SA2.
 
 ## Documentation
 
 To better understand what this tool does, refer to the 
 `Cyclone V Hard Processor System Technical Reference Manual` and also the 
 `Cyclone V HPS Register Address Map and Definitions` which can both be found 
-online on the Intel website.
+on the Intel website.
 
 ## Build the tool
 
-Use Docker to build the tool. Alternatively `cat Dockerfile` to find out how 
-to build it yourself.
+Use Docker to build the tool. To build it yourself instead, `cat Dockerfile` 
+to find out how.
 
-```
+```bash
 docker build -t cfg_tool -f Dockerfile .
 docker create --name temp_container cfg_tool
 docker cp temp_container:/home/target/arm-unknown-linux-gnueabi/release/fpga_config_tool \  
@@ -37,7 +36,7 @@ These are my copy and update scripts, they should give you a general idea,
 although you will most likely need to make changes if you want to use them. 
 Copy the tool from your host PC to the HPS:
 
-```
+```bash
 #!/bin/bash
 
 IP=192.168.123.456
@@ -49,7 +48,7 @@ scp $CFGTOOL root@$IP:$CFGTOOL_HPS
 
 Now you can update your FPGA everytime you have a new rbf:
 
-```
+```bash
 #!/bin/bash
 
 IP=192.168.123.456
