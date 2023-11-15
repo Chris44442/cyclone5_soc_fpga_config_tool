@@ -1,28 +1,22 @@
 # Cyclone V SoC FPGA Config Linux Tool
 
-On Cyclone V SoC devices the HPS can access the FPGA manager to configure the FPGA. This tool automates the entire process and should run on any Linux distro. Do not try to use it on devices other than Cyclone V SoC, it will not work (although with a few tweaks it might). Make sure `RBF_PATH` and `CDRATIO` are set correctly, e.g. 0x3 on the Terasic DE10-Nano and 0x2 on the Enclustra PE1/SA2.
+On Cyclone V SoC devices the HPS can access the FPGA manager to configure the  
+FPGA. This tool automates the entire process and should run on any Linux distro. Do not try to use it on devices other than Cyclone V SoC, it will not work (although with a few tweaks it might). Make sure `RBF_PATH` and `CDRATIO` are set correctly, e.g. 0x3 on the Terasic DE10-Nano and 0x2 on the Enclustra PE1/SA2.
 
 ## Documentation
 
 To better understand what this tool does, refer to the `Cyclone V Hard Processor System Technical Reference Manual` and also the `Cyclone V HPS Register Address Map and Definitions` which can both be found online.
 
-## Dependencies
-
-To build the tool you need:
-- Rust and Cargo installed
-- With Rustup add the cross compiler (usually `arm-unknown-linux-gnueabi`, otherwise try `arm-unknown-linux-gnueabihf`)
-- For cross compilation don't forget to state the linker in the `~/.cargo/config.toml`, e.g.:
-```
-[target.arm-unknown-linux-gnueabi]
-linker = "arm-linux-gnueabi-gcc"
-```
-
 ## Build the tool
-```
-cargo build --target=arm-unknown-linux-gnueabi --release
-```
 
-Of course you can also natively compile on your SoC device if you have Rust and Cargo installed on it.
+Use Docker to build the tool. Alternatively take a look at the Dockerfile to find out how to build it yourself.
+
+```
+docker build -t cfg_tool -f Dockerfile .
+docker create --name temp_container cfg_tool
+docker cp temp_container:/home/target/arm-unknown-linux-gnueabi/release/fpga_config_tool ./fpga_config_tool
+docker rm temp_container
+```
 
 ## How to use the tool
 
