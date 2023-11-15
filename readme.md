@@ -9,6 +9,13 @@ To better understand what this tool does, refer to the
 `Cyclone V HPS Register Address Map and Definitions` which can both be found 
 on the Intel website.
 
+Note: I have successfully tested the tool on the Terasic DE10-Nano and the 
+Enclustra PE1/SA2, each on Buildroot. Presumably it should run on any 
+Cyclone V SoC device on any Linux distro. When running old distro releases 
+cross compile compatibilty issues with glibc library may happen, in which 
+case you may want to consider upgrading to a new kernel and root file system 
+or compile natively.
+
 ## Build the tool
 
 In the source file make sure `RBF_PATH` and `CDRATIO` are set correctly, 
@@ -34,11 +41,3 @@ The scripts in the `util` directory should give you a general idea, although
 you will most likely need to make changes if you want to use them. `SCP` the 
 tool first, then run the configure script.
 
-## Note
-
-I have successfully tested the tool on the Terasic DE10-Nano and the 
-Enclustra PE1/SA2, each on Buildroot. Presumably it should run on any 
-Cyclone V SoC device on any Linux distro. When running old distro releases 
-cross compile compatibilty issues with glibc library may happen, in which 
-case you may want to consider upgrading to a new kernel and root file system 
-or compile natively.
