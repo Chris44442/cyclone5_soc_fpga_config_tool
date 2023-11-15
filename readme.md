@@ -34,11 +34,8 @@ To build it yourself instead, `cat Dockerfile` to find out how.
 
 ## How to use the tool
 
-Copy the tool from your host PC to the device, e.g. via SSH. On the device 
-make sure to have access to the rbf file, e.g. by mounting your SD card. 
-Run the tool.
-
-The scripts in the `util` directory should give you a general idea, although 
-you will most likely need to make changes if you want to use them. `SCP` the 
-tool first, then run the configure script.
+Copy the tool from your host PC to the device, e.g. via SSH (use 
+`util/scp_tool.sh` as example). On the device make sure to have access to the 
+rbf-file, e.g. by mounting your SD card. Then run the tool (use 
+`util/config_fpga.sh` as example).
 
