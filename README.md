@@ -3,9 +3,9 @@
 On Cyclone V SoC devices the HPS can access the FPGA manager to configure the 
 FPGA. This tool automates the entire process and should run on any Linux 
 distro. Do not try to use it on devices other than Cyclone V SoC, it will not 
-work (although with a few tweaks it might). Make sure `RBF_PATH` and 
-`CDRATIO` are set correctly, e.g. 0x3 on the Terasic DE10-Nano and 0x2 on the 
-Enclustra PE1/SA2.
+work (although with a few tweaks it might). In the source file make sure 
+`RBF_PATH` and `CDRATIO` are set correctly, e.g. 0x3 on the Terasic DE10-Nano 
+and 0x2 on the Enclustra PE1/SA2.
 
 ## Documentation
 
@@ -16,8 +16,8 @@ online on the Intel website.
 
 ## Build the tool
 
-Use Docker to build the tool. Alternatively take a look at the Dockerfile to 
-find out how to build it yourself.
+Use Docker to build the tool. Alternatively `cat Dockerfile` to find out how 
+to build it yourself.
 
 ```
 docker build -t cfg_tool -f Dockerfile .
