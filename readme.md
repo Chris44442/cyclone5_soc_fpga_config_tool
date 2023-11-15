@@ -2,11 +2,7 @@
 
 With this tool you can configure the FPGA fabric with your rbf-file by 
 accessing the FPGA manager from the HPS of your Cyclone V SoC device. Do not 
-try to use it on other devices. In the source file make sure `RBF_PATH` and 
-`CDRATIO` are set correctly, e.g. 0x3 on the Terasic DE10-Nano and 0x2 on the 
-Enclustra PE1/SA2.
-
-## Documentation
+try to use it on other devices.
 
 To better understand what this tool does, refer to the 
 `Cyclone V Hard Processor System Technical Reference Manual` and also the 
@@ -14,6 +10,9 @@ To better understand what this tool does, refer to the
 on the Intel website.
 
 ## Build the tool
+In the source file make sure `RBF_PATH` and 
+`CDRATIO` are set correctly, e.g. 0x3 on the Terasic DE10-Nano and 0x2 on the 
+Enclustra PE1/SA2.
 
 Use Docker to build the tool. To build it yourself instead, `cat Dockerfile` 
 to find out how.
@@ -62,7 +61,7 @@ ssh root@$IP './fpga_config_tool && umount /dev/mmcblk0p1'
 
 Note: I have successfully tested the tool on the Terasic DE10-Nano and the 
 Enclustra PE1/SA2, each on Buildroot. Presumably it should run on any 
-Cyclone V SoC device on any Linux distro. When running old Distro releases 
+Cyclone V SoC device on any Linux distro. When running old distro releases 
 cross compile compatibilty issues with glibc library may happen, in which 
 case you may want to consider upgrading to a new kernel and root file system 
 or compile natively.
