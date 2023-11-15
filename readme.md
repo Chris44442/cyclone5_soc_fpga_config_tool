@@ -30,35 +30,13 @@ Copy the tool from your host PC to the device, e.g. via SSH. On the device
 make sure to have access to the rbf file, e.g. by mounting your SD card. 
 Run the tool.
 
-These are my copy and update scripts, they should give you a general idea, 
-although you will most likely need to make changes if you want to use them. 
-Copy the tool from your host PC to the HPS:
+The scripts in the `util` directory should give you a general idea, although 
+you will most likely need to make changes if you want to use them. `SCP` the 
+tool first, then run the configure script.
 
-```bash
-#!/bin/bash
+## Note
 
-IP=192.168.123.456
-CFGTOOL="fpga_config_tool"
-CFGTOOL_HPS="~/fpga_config_tool"
-
-scp $CFGTOOL root@$IP:$CFGTOOL_HPS
-```
-
-Now you can update your FPGA everytime you have a new rbf:
-
-```bash
-#!/bin/bash
-
-IP=192.168.123.456
-RBF="../build/DE10.rbf"
-RBF_HPS="~/sdcard/fpga.rbf"
-
-ssh root@$IP 'mkdir -p sdcard && mount /dev/mmcblk0p1 ~/sdcard'
-scp $RBF root@$IP:$RBF_HPS > /dev/null
-ssh root@$IP './fpga_config_tool && umount /dev/mmcblk0p1'
-```
-
-Note: I have successfully tested the tool on the Terasic DE10-Nano and the 
+I have successfully tested the tool on the Terasic DE10-Nano and the 
 Enclustra PE1/SA2, each on Buildroot. Presumably it should run on any 
 Cyclone V SoC device on any Linux distro. When running old distro releases 
 cross compile compatibilty issues with glibc library may happen, in which 
