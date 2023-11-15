@@ -21,8 +21,7 @@ or compile natively.
 In the source file make sure `RBF_PATH` and `CDRATIO` are set correctly, 
 e.g. 0x3 on the Terasic DE10-Nano and 0x2 on the Enclustra PE1/SA2.
 
-Use Docker to build the tool. To build it yourself instead, `cat Dockerfile` 
-to find out how.
+Use Docker to build the tool:
 
 ```bash
 docker build -t cfg_tool -f Dockerfile .
@@ -30,6 +29,8 @@ docker create --name temp_container cfg_tool
 docker cp temp_container:/home/target/arm-unknown-linux-gnueabi/release/fpga_config_tool ./fpga_config_tool
 docker rm temp_container
 ```
+
+To build it yourself instead, `cat Dockerfile` to find out how.
 
 ## How to use the tool
 
