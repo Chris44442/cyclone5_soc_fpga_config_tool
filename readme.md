@@ -19,7 +19,8 @@ or compile natively.
 ## Build the tool
 
 In the source file make sure `RBF_PATH` and `CDRATIO` are set correctly, 
-e.g. 0x3 on the Terasic DE10-Nano and 0x2 on the Enclustra PE1/SA2.
+e.g. 0x3 for the Terasic DE10-Nano and 0x2 for the Enclustra PE1/SA2. Refer to 
+the documentation of your board if you are unsure.
 
 Use Docker to build the tool:
 
