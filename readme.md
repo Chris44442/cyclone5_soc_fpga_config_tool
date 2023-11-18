@@ -1,7 +1,7 @@
 # Cyclone V SoC FPGA Config Linux Tool
 
 With this tool you can configure the FPGA fabric with your rbf-file by 
-accessing the FPGA manager from the HPS of your Cyclone V SoC. Do not try to 
+accessing the FPGA manager from the HPS Linux of your Cyclone V SoC. Do not try to 
 use it on other devices.
 
 To better understand what this tool does, refer to the 
