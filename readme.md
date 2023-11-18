@@ -13,8 +13,8 @@ Note: I have successfully tested the tool on the Terasic DE10-Nano and the
 Enclustra PE1/SA2, each on Buildroot. Presumably it should run on any 
 Cyclone V SoC device on any Linux distro. When running old distro releases 
 cross compile compatibilty issues with glibc library may happen, in which 
-case you may want to consider upgrading to a new kernel and root file system 
-or compile natively.
+case you may want to consider upgrading to a new kernel and root file system
+, compile natively, or try using an older docker image.
 
 ## Build the tool
 
