@@ -5,8 +5,9 @@ accessing the FPGA manager from the HPS Linux of your Cyclone V SoC. Do not try 
 use it on devices other than Cyclone V SoC.
 
 To better understand what this tool does, refer to the 
-`Cyclone V Hard Processor System Technical Reference Manual` and also the 
-`Cyclone V HPS Register Address Map and Definitions` which can both be found 
+[Cyclone V Hard Processor System Technical Reference Manual](https://www.intel.com/content/www/us/en/docs/programmable/683126/21-2/hard-processor-system-technical-reference.html)
+and also the 
+[Cyclone V HPS Register Address Map and Definitions](https://www.intel.com/content/www/us/en/programmable/hps/cyclone-v/hps.html#sfo1410067808053.html#sfo1410067808053) which can both be found 
 on the Intel website.
 
 Note: I have successfully tested the tool on the Terasic DE10-Nano and the 
