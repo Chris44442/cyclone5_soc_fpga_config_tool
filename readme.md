@@ -4,11 +4,10 @@ With this CLI tool you can configure the FPGA fabric with your rbf-file by
 accessing the FPGA manager from the HPS Linux of your Cyclone V SoC. Do not try to 
 use it on devices other than Cyclone V SoC.
 
-To better understand what this tool does, refer to the 
+To better understand what this tool does, refer to 
 [Cyclone V Hard Processor System Technical Reference Manual](https://www.intel.com/content/www/us/en/docs/programmable/683126/21-2/hard-processor-system-technical-reference.html)
-and also the 
-[Cyclone V HPS Register Address Map and Definitions](https://www.intel.com/content/www/us/en/programmable/hps/cyclone-v/hps.html#sfo1410067808053.html#sfo1410067808053) which can both be found 
-on the Intel website.
+and 
+[Cyclone V HPS Register Address Map and Definitions](https://www.intel.com/content/www/us/en/programmable/hps/cyclone-v/hps.html#sfo1410067808053.html#sfo1410067808053).
 
 Note: I have successfully tested the tool on the Terasic DE10-Nano and the 
 Enclustra PE1/SA2, each on Buildroot. Presumably it should run on any 
