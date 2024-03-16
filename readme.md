@@ -18,22 +18,38 @@ compile natively, or try using an older docker image.
 
 ## Build the tool
 
-In the source file make sure `RBF_PATH` and `CDRATIO` are set correctly, 
-e.g. 0x3 for the Terasic DE10-Nano and 0x2 for the Enclustra PE1/SA2. Refer to 
-the documentation of your board if you are unsure.
-
-Use Docker to build the tool:
+- Build with Docker:
 
 ```bash
 ./build.sh
 ```
 
-To build it yourself instead, `cat Dockerfile` to find out how.
+- Build with Cargo:
+
+```bash
+cargo build --release
+```
 
 ## How to use the tool
 
 Copy the tool from your host PC to the device, e.g. via SSH (use 
 `util/scp_tool.sh` as example). On the device make sure to have access to the 
 rbf-file, e.g. by mounting your SD card. Then run the tool (use 
-`util/config_fpga.sh` as example).
+`util/config_fpga.sh ` as example).
+
+Make sure `RBF_PATH` and `CDRATIO` are set correctly, 
+e.g. 0x3 for the Terasic DE10-Nano and 0x2 for the Enclustra PE1/SA2. Refer to 
+the documentation of your board if you are unsure.
+
+```txt
+Embedded Linux tool to configure your Cyclone V FPGA fabric from the HPS
+
+Usage: cooli [OPTIONS]
+
+Options:
+  -r <RBF_PATH>      Path of the rbf file, relative to this binary [default: sdcard/fpga.rbf]
+  -c <CD_RATIO>      CD ratio of the MSEL setting of your board [default: 8] [possible values: 1, 2, 4, 8]
+  -h, --help         Print help
+  -V, --version      Print version
+```
 
