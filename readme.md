@@ -1,8 +1,8 @@
-# Cyclone V SoC FPGA Config Linux Tool
+# Cyclone V SoC FPGA Config CLI Tool
 
-With this tool you can configure the FPGA fabric with your rbf-file by 
+With this CLI tool you can configure the FPGA fabric with your rbf-file by 
 accessing the FPGA manager from the HPS Linux of your Cyclone V SoC. Do not try to 
-use it on other devices.
+use it on devices other than Cyclone V SoC.
 
 To better understand what this tool does, refer to the 
 `Cyclone V Hard Processor System Technical Reference Manual` and also the 
@@ -17,6 +17,8 @@ case you may want to consider upgrading to a new kernel and root file system,
 compile natively, or try using an older docker image.
 
 ## Build the tool
+
+If you don't want to use the release binary, you can build the tool from source.
 
 - Build with Docker:
 
