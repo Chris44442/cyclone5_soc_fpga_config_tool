@@ -46,7 +46,7 @@ the documentation of your board if you are unsure.
 ```txt
 Embedded Linux tool to configure your Cyclone V FPGA fabric from the HPS
 
-Usage: cooli [OPTIONS]
+Usage: fpga_config_tool [OPTIONS]
 
 Options:
   -r <RBF_PATH>      Path of the rbf file, relative to this binary [default: sdcard/fpga.rbf]
