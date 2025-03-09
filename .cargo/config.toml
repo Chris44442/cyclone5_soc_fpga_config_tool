@@ -1,6 +1,6 @@
 [build]
-target = "arm-unknown-linux-gnueabi"
+target = "arm-unknown-linux-gnueabihf"
 
-[target.arm-unknown-linux-gnueabi]
-linker = "arm-linux-gnueabi-gcc"
+[target.arm-unknown-linux-gnueabihf]
+linker = "arm-linux-gnueabihf-gcc"
 

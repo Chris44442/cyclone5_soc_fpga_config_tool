@@ -1,5 +1,7 @@
-extern crate memmap;
-use std::ptr::{read_volatile, write_volatile};
+use std::fs::OpenOptions;
+use memmap2::{MmapOptions, Mmap, MmapMut};
+use std::slice::{from_raw_parts_mut, from_raw_parts};
+use std::ptr::{write_volatile,read_volatile};
 
 use clap::Parser;
 /// Embedded Linux tool to configure your Cyclone V FPGA fabric from the HPS
@@ -10,11 +12,11 @@ struct Args {
     #[arg(short, long, default_value_t = String::from("sdcard/fpga.rbf"),)]
     rbf_path: String,
     /// CD ratio of the MSEL setting of your board
-    #[arg(short, long, default_value_t = String::from("8"), value_parser = ["1", "2", "4", "8"])]
+    #[arg(short, long, default_value_t = String::from("4"), value_parser = ["1", "2", "4", "8"])]
     cd_ratio: String,
 }
 
-fn main() -> std::io::Result<()> {
+fn main() {
     let binding = Args::parse();
     let rbf_path: &str = binding.rbf_path.as_str();
     let cd_ratio: u32 = match Args::parse().cd_ratio.as_str() {
@@ -23,36 +25,107 @@ fn main() -> std::io::Result<()> {
         "4" => 2,
          _  => 3,
     };
-    // const cd_ratio : u32 = 0x3; // This must match the CD ratio of your MSEL setting, 0x0:cd_ratio of 1, 0x1:cd_ratio of 2, 0x2:cd_ratio of 4, 0x3:cd_ratio of 8
-    const FPGA_MANAGER_REGS_ADR: u32 = 0xFF706000;
-    const FPGA_MANAGER_DATA_ADR: u32 = 0xFFB90000;
 
-    let devmem_file = std::fs::OpenOptions::new().read(true).write(true).open("/dev/mem")?;
-    let mut fpga_regs_mmap = unsafe {memmap::MmapOptions::new().offset(FPGA_MANAGER_REGS_ADR as u64).len(8).map_mut(&devmem_file)?};
-    let fpga_regs = unsafe {std::slice::from_raw_parts_mut(fpga_regs_mmap.as_mut_ptr() as *mut u32, fpga_regs_mmap.len() / 4)}; // FPGA manager registers slice
+    let (reg, _mmap0) = mut_slice_from_file_with_adr(FPGA_MANAGER_REGS_ADR, 8, "/dev/mem");
+    let (dat, _mmap1) = mut_slice_from_file_with_adr(FPGA_MANAGER_DATA_ADR, 4, "/dev/mem");
+    let (rbf, _mmap2) = slice_from_file(rbf_path);
 
-    let mut fpga_data_mmap = unsafe {memmap::MmapOptions::new().offset(FPGA_MANAGER_DATA_ADR as u64).len(4).map_mut(&devmem_file)?};
-    let fpga_data = fpga_data_mmap.as_mut_ptr() as *mut u32; // FPGA manager data
+    EN.write(reg, 1); // hand off control to HPS
+    NCONFIGPULL.write(reg, 1); // put FPGA into reset phase
+    while STATUS_MODE.read(reg) != 1 {}; // wait for FPGA to be in reset phase
+    CDRATIO.write(reg, cd_ratio); // set cd_ratio
+    NCONFIGPULL.write(reg, 0); // get FPGA out of reset phase
+    while STATUS_MODE.read(reg) != 2 {}; // wait for FPGA to be in configuration phase
+    AXICFGEN.write(reg, 1); // enable AXI data transfer
 
-    let rbf_file = std::fs::OpenOptions::new().read(true).open(rbf_path)?;
-    let rbf_mmap = unsafe {memmap::MmapOptions::new().map(&rbf_file)?};
-    let rbf_data = unsafe {std::slice::from_raw_parts(rbf_mmap.as_ptr() as *mut u32, rbf_mmap.len() / 4)};
-
-    unsafe {write_volatile(&mut fpga_regs[1] as *mut u32, read_volatile(&fpga_regs[1]) | 0x1)}; //set en (HPS takes control)
-    unsafe {write_volatile(&mut fpga_regs[1] as *mut u32, read_volatile(&fpga_regs[1]) | 0x4)}; //set nconfigpull (FPGA off)
-    while (unsafe {read_volatile(&fpga_regs[0])} & 0x7) != 0x1 {}; //wait for status update
-    unsafe {write_volatile(&mut fpga_regs[1] as *mut u32, read_volatile(&fpga_regs[1]) & !0xC0)}; //reset cdratio
-    unsafe {write_volatile(&mut fpga_regs[1] as *mut u32, read_volatile(&fpga_regs[1]) | cd_ratio << 6)}; //set cdratio
-    unsafe {write_volatile(&mut fpga_regs[1] as *mut u32, read_volatile(&fpga_regs[1]) & !0x4)}; //reset nconfigpull (FPGA on)
-    while (unsafe {read_volatile(&fpga_regs[0])} & 0x7) != 0x2 {}; //wait for status update
-    unsafe {write_volatile(&mut fpga_regs[1] as *mut u32, read_volatile(&fpga_regs[1]) | 0x100)}; //set axicfgen
-
-    for rbf_u32_word in rbf_data.iter() {
-        unsafe {*fpga_data = *rbf_u32_word};
+    for rbf_word in rbf.iter() {
+        FPGA_DATA.write(dat, *rbf_word); // write rbf data
     }
 
-    while (unsafe {read_volatile(&fpga_regs[0])} & 0x7) != 0x4 {}; //wait for status update
-    unsafe {write_volatile(&mut fpga_regs[1] as *mut u32, read_volatile(&fpga_regs[1]) & !0x100)};// reset axicfgen
-    unsafe {write_volatile(&mut fpga_regs[1] as *mut u32, read_volatile(&fpga_regs[1]) & !0x1)};// reset en (HPS releases control)
-    Ok(())
+    while STATUS_MODE.read(reg) != 4 {}; // wait for FPGA to be in user mode phase
+    AXICFGEN.write(reg, 0); // disable AXI data transfer
+    EN.write(reg, 0); // HPS releases controls
 }
+
+
+struct Reg {
+    offset: usize,
+}
+
+impl Reg {
+    fn write(&self, slice: &mut [u32], value: u32) {
+        unsafe {write_volatile(&mut slice[self.offset], value)};
+    }
+    fn _read(&self, slice: &mut [u32]) -> u32 {
+        unsafe {read_volatile(&mut slice[self.offset]) }
+    }
+}
+
+struct RegField {
+    offset: usize,
+    mask: u32,
+    lsb: u8,
+}
+
+impl RegField {
+    fn write(&self, slice: &mut [u32], value: u32) {
+        let new_value_at_bit_position = (value << self.lsb) & self.mask;
+        let old_remaining_bit_values = unsafe { read_volatile(&mut slice[self.offset])} & !self.mask ;
+        unsafe {write_volatile(&mut slice[self.offset], old_remaining_bit_values | new_value_at_bit_position)};
+    }
+    fn read(&self, slice: &mut [u32]) -> u32 {
+        (unsafe { read_volatile(&mut slice[self.offset]) } & self.mask) >> self.lsb
+    }
+}
+
+fn mut_slice_from_file_with_adr<'a>(adr: usize, len: usize, path: &str) -> (&'a mut [u32], MmapMut ) {
+    let f = OpenOptions::new().read(true).write(true).create(true).open(path).expect("Error opening file path");
+    let mut mmap = unsafe { MmapOptions::new().offset(adr as u64).len(len).map_mut(&f).expect("Error creating mutable mmap") };
+    let slice = unsafe { from_raw_parts_mut(mmap.as_mut_ptr() as *mut u32, mmap.len() / 4) };
+    (slice, mmap) // to use slice, mmap must not be out of scope
+}
+
+fn slice_from_file<'a>(path: &str) -> (&'a [u32], Mmap ) {
+    let f = OpenOptions::new().read(true).write(false).create(false).open(path).expect("Error opening file path");
+    let mmap = unsafe { MmapOptions::new().map(&f).expect("Error creating mmap") };
+    let slice = unsafe { from_raw_parts(mmap.as_ptr() as *mut u32, mmap.len() / 4) };
+    (slice, mmap) // to use slice, mmap must not be out of scope
+}
+
+const FPGA_MANAGER_REGS_ADR: usize = 0xFF706000;
+const FPGA_MANAGER_DATA_ADR: usize = 0xFFB90000;
+
+const FPGA_DATA: Reg = Reg {
+    offset: 0x0,
+};
+
+const STATUS_MODE: RegField = RegField {
+    offset: 0x0,
+    mask: 0x7,
+    lsb: 0,
+};
+
+const EN: RegField = RegField {
+    offset: 0x1,
+    mask: 0x1,
+    lsb: 0,
+};
+
+const NCONFIGPULL: RegField = RegField {
+    offset: 0x1,
+    mask: 0x4,
+    lsb: 2,
+};
+
+const CDRATIO: RegField = RegField {
+    offset: 0x1,
+    mask: 0xc0,
+    lsb: 6,
+};
+
+const AXICFGEN: RegField = RegField {
+    offset: 0x1,
+    mask: 0x100,
+    lsb: 8,
+};
+

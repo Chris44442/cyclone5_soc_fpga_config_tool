@@ -23,7 +23,8 @@ If you don't want to use the release binary, you can build the tool from source.
 - Build with Docker:
 
 ```bash
-./build.sh
+docker build -t fpga .
+docker run -v $(pwd):/home --rm fpga cargo build --release
 ```
 
 - Build with Cargo:
